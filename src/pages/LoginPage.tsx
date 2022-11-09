@@ -6,15 +6,16 @@ import { height } from '@mui/system';
 import React,{useState} from 'react'
 import { toast, ToastContainer } from 'react-toastify'
 import "react-toastify/dist/ReactToastify.css";
+import axios from 'axios'
  
 const LoginPage = () => {
     const [userName, setUserName] = useState<string>('')
     const [password, setPassWord] = useState<string>('')
-    const handleSubmit = () =>{
-        console.log(userName)
-        console.log(password)
-        toast.success(userName)
-
+    const handleSubmit = async () =>{
+        const user = {name:userName,password}
+        const config = {headers:{'Content-Type': 'application/json'}}
+        const {data} = await axios.post('api/users/login',user,config)
+        console.log(data)
     }
   return (
     <Container sx={{height: '80vh'}}>
