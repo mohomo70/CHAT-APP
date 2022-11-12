@@ -13,6 +13,7 @@ import { userContext } from '../context';
 const LoginPage = () => {
     const [userName, setUserName] = useState<string>('')
     const [password, setPassWord] = useState<string>('')
+    const [error , setError] = useState<string>('')
     const navigate = useNavigate()
 
     const {user,setingUser} = useContext(userContext)
@@ -22,20 +23,23 @@ const LoginPage = () => {
     
 
     const handleSubmit = async () =>{
+        try{
         const user = {name:userName,password}
         const config = {headers:{'Content-Type': 'application/json'}}
         const {data} = await axios.post('api/users/login',user,config)
         localStorage.setItem("user", JSON.stringify(data))
         setingUser(data)
         console.log(data)
+        }catch(err:any){
+            console.log(err.response.data.message)
+            setError(err.response.data.message)
+        }
     }
-    const deletes = () => {
-        setingUser(" ")
-        localStorage.removeItem('user')
-    }
+   
   return (
     <Container sx={{height: '80vh'}}>
         <Box sx={{display:'flex',flexDirection:'column', height:"80%", justifyContent:'center'}}>
+                {error && <div>{ error} </div>}
             {/* <div style={{display:'flex'}}> */}
                 <TextField 
                     label="Name"
@@ -56,10 +60,6 @@ const LoginPage = () => {
                 />
                 <Button onClick={handleSubmit} variant='contained' sx={{width:'50%', alignSelf: 'center'}}>Log In</Button>
                 <Typography variant='body1' sx={{alignSelf: 'center'}}><Link to = '/register'>register</Link></Typography>
-                <Link to = '/register'>register</Link>
-                {/* </div> */}
-                <ToastContainer />
-                <Button onClick={deletes} variant='contained'>Delete</Button>
         </Box>
     </Container>
   )

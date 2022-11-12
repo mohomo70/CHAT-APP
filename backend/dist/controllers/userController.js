@@ -31,7 +31,8 @@ const authUser = (0, express_async_handler_1.default)((req, res) => __awaiter(vo
             });
         }
         else {
-            res.status(401).json({ message: 'error in database' });
+            res.status(401).json({ message: 'Username or Password is Wrong' });
+            // throw new Error('Invalid user data')
         }
     }
     catch (error) {
@@ -43,8 +44,8 @@ const registerUser = (0, express_async_handler_1.default)((req, res) => __awaite
     const { name, password } = req.body;
     const userExists = yield userModel_1.default.findOne({ name });
     if (userExists) {
-        res.status(400);
-        throw new Error('User already exists');
+        res.status(400).json({ message: " User Already exists" });
+        // throw new Error('User already exists')
     }
     const user = yield userModel_1.default.create({
         name,
@@ -57,8 +58,9 @@ const registerUser = (0, express_async_handler_1.default)((req, res) => __awaite
         });
     }
     else {
-        res.status(400);
-        throw new Error('Invalid user data');
+        res.status(400).json({ message: "Invalid user data" });
+        // res.status(400)
+        // throw new Error('Invalid user data')
     }
 }));
 exports.registerUser = registerUser;
