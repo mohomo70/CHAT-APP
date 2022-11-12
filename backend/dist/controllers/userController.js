@@ -20,17 +20,22 @@ const generateToken_1 = __importDefault(require("../utils/generateToken"));
 // @route   POST /api/users/login
 // @access  Public
 const authUser = (0, express_async_handler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { username, password } = req.body;
-    const user = yield userModel_1.default.findOne({ username });
-    if (user && (yield user.matchPassword(password))) {
-        res.json({
-            id: user.id,
-            name: user.name,
-            token: (0, generateToken_1.default)(user.id)
-        });
+    const { name, password } = req.body;
+    try {
+        const user = yield userModel_1.default.findOne({ name });
+        if (user && (yield user.matchPassword(password))) {
+            res.json({
+                id: user.id,
+                name: user.name,
+                token: (0, generateToken_1.default)(user.id)
+            });
+        }
+        else {
+            res.status(401).json({ message: 'error in database' });
+        }
     }
-    else {
-        res.status(401);
+    catch (error) {
+        res.status(500).json({ message: "Error" });
     }
 }));
 exports.authUser = authUser;

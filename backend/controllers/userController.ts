@@ -8,17 +8,20 @@ import generateToken from '../utils/generateToken'
 // @access  Public
 
 const authUser = asyncHandler(async (req, res) => {
-    const { username, password } = req.body
-
-    const user = await User.findOne({ username })
-    if (user && (await user.matchPassword(password))) {
-        res.json({
-            id: user.id,
-            name: user.name,
-            token: generateToken(user.id)
-        })
-    } else {
-        res.status(401)
+    const { name, password } = req.body
+    try {
+        const user = await User.findOne({ name })
+        if (user && (await user.matchPassword(password))) {
+            res.json({
+                id: user.id,
+                name: user.name,
+                token: generateToken(user.id)
+            })
+        } else {
+            res.status(401).json({ message: 'error in database' })
+        }
+    } catch (error) {
+        res.status(500).json({ message: "Error" })
     }
 })
 

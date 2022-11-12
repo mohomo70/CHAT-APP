@@ -1,9 +1,11 @@
 import { Container, TextField, Box, Typography, Button} from '@mui/material'
-import {Link} from 'react-router-dom'
-import React,{useState} from 'react'
+import {Link, useNavigate} from 'react-router-dom'
+import React,{useState,useEffect} from 'react'
 import { toast } from 'react-toastify'
 import "react-toastify/dist/ReactToastify.css";
 import axios from 'axios'
+import { useContext } from 'react';
+import { userContext } from '../context';
 
 type fullUser = {
     name:string,
@@ -14,6 +16,12 @@ const RegisterPage = () => {
     const [name, setName] = useState<string>('')
     const [password, setPassWord] = useState<string>('')
     const [confrimPassword, setConfirmPassword] = useState<string>('')
+    const {user,setingUser} = useContext(userContext)
+    const navigate = useNavigate()
+
+    useEffect(() => {
+        !user ? navigate('/register') : navigate('/home')
+    }, [user, navigate])
 
     const handleSubmit = async () => {
         if(password !==confrimPassword){
@@ -24,6 +32,8 @@ const RegisterPage = () => {
         const newUser:fullUser = {name, password}
         const config = {headers:{'Content-Type': 'application/json'}}
         const {data} = await axios.post('/api/users/register',newUser,config)
+        localStorage.setItem("user", JSON.stringify(data))
+        setingUser(data)
         console.log(data)
         }
     }

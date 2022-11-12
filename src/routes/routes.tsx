@@ -15,6 +15,10 @@ const routes: RouteObject = {
             path: 'register',
             element: <RegisterPage />,
         },
+        {
+            path: 'home',
+            element: <HomePage />
+        }
     ]
 }
 
