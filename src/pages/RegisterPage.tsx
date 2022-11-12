@@ -6,6 +6,8 @@ import "react-toastify/dist/ReactToastify.css";
 import axios from 'axios'
 import { useContext } from 'react';
 import { userContext } from '../context';
+import { useMutation, useQueryClient } from 'react-query';
+
 
 type fullUser = {
     name:string,
@@ -19,10 +21,34 @@ const RegisterPage = () => {
     const [error, setError] = useState<string>('')
     const {user,setingUser} = useContext(userContext)
     const navigate = useNavigate()
+    const queryClient = useQueryClient()
+
+    const { mutate: registerUser } = useMutation(
+        (async (user:fullUser) => {
+            const config = {headers:{'Content-Type': 'application/json'}}
+            const {data} = await axios.post('api/users/register',user,config)
+            return data
+        }),
+        {
+            onSuccess: (data) => {
+                queryClient.invalidateQueries('user');
+                console.log(data)
+                setingUser(data)
+                localStorage.setItem('user',JSON.stringify(data))
+            },
+            onError: (error: any) => {
+                console.log(error)
+                setError(error.response.data.message)
+
+            }
+        }
+    )
 
     useEffect(() => {
         !user ? navigate('/register') : navigate('/home')
     }, [user, navigate])
+
+
 
     const handleSubmit = async () => {
         if(password !==confrimPassword){
@@ -31,18 +57,19 @@ const RegisterPage = () => {
             console.log('wrong')
         }
         else{
-            try{
-                const newUser:fullUser = {name, password}
-                const config = {headers:{'Content-Type': 'application/json'}}
-                const {data} = await axios.post('/api/users/register',newUser,config)
-                localStorage.setItem("user", JSON.stringify(data))
-                setingUser(data)
-                console.log(data)
-            }catch(err: any){
-                console.log(err)
-                setError(err.response.data.message)
-            }
-        }
+            // try{
+                //     const config = {headers:{'Content-Type': 'application/json'}}
+                //     const {data} = await axios.post('/api/users/register',newUser,config)
+                //     localStorage.setItem("user", JSON.stringify(data))
+                //     setingUser(data)
+                //     console.log(data)
+                // }catch(err: any){
+                    //     console.log(err)
+                    //     setError(err.response.data.message)
+                    // }
+                    const newUser:fullUser = {name, password}
+                    registerUser(newUser)
+                }
     }
   return (
     <Container sx={{height:'80vh'}}>

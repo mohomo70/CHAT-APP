@@ -9,31 +9,50 @@ import "react-toastify/dist/ReactToastify.css";
 import axios from 'axios'
 import { useContext } from 'react';
 import { userContext } from '../context';
+import { useMutation, useQueryClient } from 'react-query';
+
  
 const LoginPage = () => {
     const [userName, setUserName] = useState<string>('')
     const [password, setPassWord] = useState<string>('')
     const [error , setError] = useState<string>('')
     const navigate = useNavigate()
+    const queryClient = useQueryClient();
+
+    type userID = {
+        name:string,
+        password:string
+    }
 
     const {user,setingUser} = useContext(userContext)
     useEffect(() => {
         !user? navigate('/login'): navigate('/home')
     }, [user])
     
+    const {mutate: loginUser} = useMutation(
+        (async (user:userID) =>{
+            const config = {headers:{'Content-Type': 'application/json'}}
+            const {data} = await axios.post('api/users/login',user,config)
+            return data
+        }),
+        {
+            onSuccess: (data) => {
+                queryClient.invalidateQueries('user');
+                console.log(data)
+                setingUser(data)
+                localStorage.setItem('user',JSON.stringify(data))
+            },
+            onError: (error: any) => {
+                console.log(error)
+                setError(error.response.data.message)
+
+            }
+        }
+    )
 
     const handleSubmit = async () =>{
-        try{
         const user = {name:userName,password}
-        const config = {headers:{'Content-Type': 'application/json'}}
-        const {data} = await axios.post('api/users/login',user,config)
-        localStorage.setItem("user", JSON.stringify(data))
-        setingUser(data)
-        console.log(data)
-        }catch(err:any){
-            console.log(err.response.data.message)
-            setError(err.response.data.message)
-        }
+        loginUser(user)
     }
    
   return (
