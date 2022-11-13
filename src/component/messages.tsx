@@ -3,7 +3,7 @@ import { display } from '@mui/system'
 import React,{useContext, useState, useEffect} from 'react'
 import { userContext} from '../context'
 import axios from 'axios'
-import { useQuery } from 'react-query'
+import { useQuery,useMutation,useQueryClient } from 'react-query'
 
 
 
@@ -21,45 +21,30 @@ const Messages: React.FC<Props> = ({reciever}) => {
     const {user, setingUser} = useContext<any>(userContext)
     const [allmessages, setallMessages] = useState<[]>([])
     const [content, setContent] = useState('')
+    const queryClient = useQueryClient();
 
-    // useEffect(() => {
-    //   console.log(reciever),
-    //   console.log(user)
-    // }, [reciever, user])
+    const { mutate: fetchmessages,data:msg } = useMutation(
+    (async () => {
+        const {data} = await axios.post('api/messages/messages',{user,reciever})
+        return data
+    }))
+
+    const { mutate: sentMessage,data:sent } = useMutation(
+        (async () => {
+            const config = {headers:{'Content-Type': 'application/json'}}
+            const {data} = await axios.post('api/messages/submit',{content,receiver:reciever,sender:user},config)
+            return data
+    }))
 
     useEffect(() => {
-      console.log(user)
-      console.log(reciever)
-      const config = {headers:{'Content-Type': 'application/json'}}
       if(reciever){
-      const getdata = async (user:any) => {
-          const {data} = await axios.post('api/messages/messages',{user,reciever},config)
-          const {messages} = data
-          setallMessages(messages)
+      fetchmessages()
       }
-    getdata(user)
-      }
-      console.log(`messages: ${allmessages}`)
-      console.log(typeof allmessages)
-    }, [reciever,user])
-
-//     const config = {headers:{'Content-Type': 'application/json'}}
-//     const { isLoading, isFetching, data} = useQuery('messages', async () =>
-//     {console.log(`users: ${user.name}`)
-//      const response = await axios.post('api/messages/messages',user);
-//     return response.data
-//   })
-
-
-    
-
-    const handleSubmit = async () => {
-        const res = reciever
-        const us = user
-        const config = {headers:{'Content-Type': 'application/json'}}
-        const {data} = await axios.post('api/messages/submit',{content,receiver:reciever,sender:user},config)
+    }, [reciever,sent])
+   
+    const handleSubmit =  () => {
+        sentMessage()
         setContent('')
-        console.log(`messages:${data}`)
     }
   return (
     <>
@@ -70,7 +55,7 @@ const Messages: React.FC<Props> = ({reciever}) => {
         <Container>
             <Box>
                 <Box>
-                    {allmessages && allmessages.map((x:any) => 
+                    {msg && msg.messages.map((x:any) => 
                     <>
                         <div>{x.content}</div>
                         <div>{x.receiver.name}</div>

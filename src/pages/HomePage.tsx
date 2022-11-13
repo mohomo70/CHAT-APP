@@ -32,7 +32,6 @@ const HomePage = () => {
         if(user === null){
             navigate('/login')
         }
-        console.log(reciever)
     }, [user,navigate,users,reciever])
 
     const logOut = () => {
@@ -42,7 +41,6 @@ const HomePage = () => {
     
     const handleclick = (user:userInterface) => {
       setReciever(user)
-      console.log(user)
     }
   return (
     <>  
