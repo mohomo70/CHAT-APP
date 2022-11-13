@@ -52,4 +52,14 @@ const registerUser = asyncHandler(async (req, res) => {
     }
 })
 
-export { authUser, registerUser }
+const getUsers = asyncHandler(async (req, res) => {
+    const { content, sender, receiver } = req.body
+    try {
+        const users = await User.find({})
+        res.json(users)
+    } catch (err) {
+        res.status(400).json({ message: "Error in getting users" })
+    }
+})
+
+export { authUser, registerUser, getUsers }

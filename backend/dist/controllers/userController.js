@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.registerUser = exports.authUser = void 0;
+exports.getUsers = exports.registerUser = exports.authUser = void 0;
 const express_async_handler_1 = __importDefault(require("express-async-handler"));
 const userModel_1 = __importDefault(require("../models/userModel"));
 const generateToken_1 = __importDefault(require("../utils/generateToken"));
@@ -64,3 +64,14 @@ const registerUser = (0, express_async_handler_1.default)((req, res) => __awaite
     }
 }));
 exports.registerUser = registerUser;
+const getUsers = (0, express_async_handler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { content, sender, receiver } = req.body;
+    try {
+        const users = yield userModel_1.default.find({});
+        res.json(users);
+    }
+    catch (err) {
+        res.status(400).json({ message: "Error in getting users" });
+    }
+}));
+exports.getUsers = getUsers;
