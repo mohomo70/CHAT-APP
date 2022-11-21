@@ -8,5 +8,7 @@ react
 typescript
 react-query
 react-router-v6
+useContext
+jwt
 express
 mongoose
