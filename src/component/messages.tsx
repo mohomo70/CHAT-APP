@@ -4,6 +4,7 @@ import React,{useContext, useState, useEffect} from 'react'
 import { userContext} from '../context'
 import axios from 'axios'
 import { useQuery,useMutation,useQueryClient } from 'react-query'
+import Message from './Message'
 
 
 
@@ -55,12 +56,8 @@ const Messages: React.FC<Props> = ({reciever}) => {
         <Container>
             <Box>
                 <Box>
-                    {msg && msg.messages.map((x:any) => 
-                    <>
-                        <div>{x.content}</div>
-                        <div>{x.receiver.name}</div>
-                        <div>{x.sender.name}</div>
-                    </>
+                    {msg && msg.messages.map((massage:any, index:any) => 
+                        <Message message={massage} key={index}/>
                     ) }
                     {/* {data&& data.map((x:any)=>(<div>{x}</div>))} */}
                 </Box>
